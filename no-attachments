@@ -1,0 +1,100 @@
+function sendZendeskEmail() {
+    
+  var ss = SpreadsheetApp.openById('1kVV2TOy87Lk23GctJEfjQ4mTIMKnkPgx1MmZB4GHgFM');
+  var sheet = ss.setActiveSheet(ss.getSheetByName('Zapier Link'));
+  var costCenter = "Advancement > Creative Content"; // Customize per SA Cost Center
+  var mainFolder = DriveApp.getFolderById('0B-Z7OUgXBAAbflVkOXJnX296b05NWVdHYWQ1VU1xUG92TVhfaVhmTlkxMWlTdWZ3MS1fams'); // Customize per user financial folder
+  var vendorFolders = mainFolder.getFolders();
+  var EMAIL_SENT = "Sent";
+  var range = sheet.getRange(2,1,sheet.getMaxRows()-1,sheet.getMaxColumns());
+  var data = range.getValues();
+  var today = new Date();
+  var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+  
+  var startRow = 2;  // First row of data to process
+  var numRows = 1000;   // Number of rows to process
+
+  for (var i = 1; i < data.length; ++i) {
+    var row = data[i];
+    var status = row[15]; // Trigger row
+  
+    if (status == "Ready") {  // Prevents sending duplicates;
+      var description = row[0];
+      var poNum = row[1];
+      var invNum = row[2];
+      var invDate = row[3];
+      var vendor = row[4];
+      var budgetItem = row[5];
+      var GL = row[6];
+      var actCode = row[7];
+      var submitDate = row[8];
+      var ticket = row[9];
+      var invAmt = row[11];
+      var actSpend = row[10];
+      
+      // Find the right vendor folder and get the PO & invoice attachments
+      /*
+      function getSubFolders() {
+        while (vendorFolders.hasNext()) {
+          var folder = vendorFolders.next();
+          var name = folder.getName();
+          
+          if (name.match('Tandem Vault')); {
+            var folderId = folder.getId();
+            Logger.log(folderId);
+        }
+      
+      }
+      }
+      */
+      
+      /*
+      var searchFor = 'title contains "2186"';
+      var files = DriveApp.searchFiles(searchFor);
+      var names =[];
+      while (files.hasNext()) {
+        var invFile = files.next();
+        names.push(file.getName());
+      }
+      
+      }
+      //for (var i=0;i<names.length;i++){
+        //Logger.log(names[i]);
+      */
+      
+      //var poFile = DriveApp.getFileById('0B-Z7OUgXBAAbelV2N0pCXy1UTTQ');
+      //var invFile = DriveApp.getFileById('0B-Z7OUgXBAAbUUF0eFdJVVhCZE0');
+      
+      // Send the email with an HTML table in the body
+      
+      var subject = "AP: " + vendor + " Invoice #" + invNum;
+      var message = '<table align="left"><tbody><tr><th scope="row" align="left">Cost Center</th><td>'+costCenter+
+      '</td></tr><tr><th scope="row" align="left">Vendor</th><td>'+vendor+
+      '</td></tr><tr><th scope="row" align="left">Invoice No.</th><td>'+invNum+
+      '</td></tr><tr><th scope="row" align="left">Invoice Date</th><td>'+invDate+
+      '</td></tr><tr><th scope="row" align="left">Invoice Amt</th><td>'+invAmt+
+      '</td></tr><tr><th scope="row" align="left">PO Number</th><td>'+poNum+
+      '</td></tr><tr><th scope="row" align="left">Description</th><td>'+description+
+      '</td></tr><tr><th scope="row" align="left">GL Acct</th><td>'+GL+
+      '</td></tr><tr><th scope="row" align="left">Activity Code</th><td>'+actCode+
+      '</td></tr></tbody></table>'
+      
+      MailApp.sendEmail({
+        to: "finance.support@successacademies.org",
+        //to: "brent.postlethweight@successacademies.org", // Change to ZenDesk Ticket
+        subject: subject,
+        htmlBody: message,
+        //attachments: [poFile.getAs(MimeType.PDF),invFile.getAs(MimeType.PDF)]
+      });
+ 
+      sheet.getRange(startRow + i, 16).setValue(EMAIL_SENT);
+      sheet.getRange(startRow + i, 9).setValue(date);
+      sheet.getRange(startRow + i, 11).setValue(invAmt);
+      
+      // Make sure the cell is updated right away in case the script is interrupted
+      SpreadsheetApp.flush();
+  
+}
+}
+}
+
