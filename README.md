@@ -1,2 +1,2 @@
 # send-finance-ticket
-Sends an email to finance support with an HTML table of the invoice data and attaches the PO and invoice files
+Sends an email with an HTML table populated by the contents of a spreadsheet row.
