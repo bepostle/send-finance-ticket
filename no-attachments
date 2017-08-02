@@ -1,4 +1,4 @@
-function sendZendeskEmail() {
+function no-attachments() {
     
   var ss = SpreadsheetApp.openById('1kVV2TOy87Lk23GctJEfjQ4mTIMKnkPgx1MmZB4GHgFM');
   var sheet = ss.setActiveSheet(ss.getSheetByName('Zapier Link'));
